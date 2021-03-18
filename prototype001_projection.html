@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id = "map" width="256px" height="256px" style="outline: 1px solid red;">
+        
+    </canvas>
+    <!-- https://en.wikipedia.org/wiki/Web_Mercator_projection -->
+</body>
+    <script>
+        // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage#JavaScript_2
+        var image = new Image ();
+        image.src = "https://a.tile.openstreetmap.org/0/0/0.png";
+        image.onload = drawImageActualSize; // Draw when image has loaded
+        function drawImageActualSize() {
+            var canvas = document.getElementById('map');
+            canvas.width = this.naturalWidth;
+            canvas.height = this.naturalHeight;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(this, 0, 0);
+            ctx.drawImage(this, 0, 0, this.width, this.height);
+        }
+
+        window.addEventListener('load',function(){
+            var canvas = document.getElementById('map');
+            console.log("canvas:",canvas);
+            console.dir(canvas);
+            var context = canvas.getContext('2d');
+            var zoomLevel = 0;
+            var λ = 127 /180 * Math.PI;
+            var φ =  38 /180 * Math.PI;
+            var MAX_φ = (2 * Math.atan(Math.pow(Math.E ,Math.PI)) - Math.PI/2) * 180 /Math.PI;
+            var x = Math.floor(256 / ( 2 * Math.PI ) * Math.pow(2,zoomLevel) * ( λ + Math.PI));
+            var y = 256 / ( 2 * Math.PI ) * Math.pow(2,zoomLevel) * ( Math.PI - Math.log(Math.tan(Math.PI/4 + φ/2)));
+            console.log("x,y",x,y);
+            context.fillStyle = "rgb(200,0,0)";
+            context.fillRect (x-2, y-2, 5, 5);
+        });
+        
+
+
+
+
+    </script>
+</html>
