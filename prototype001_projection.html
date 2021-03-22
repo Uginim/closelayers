@@ -42,7 +42,65 @@
             context.fillRect (x-2, y-2, 5, 5);
         });
         
+        function TileLoader(){
+            
+        }
+        /** 
+         * 해당하는 타일 이미지의 URL을 생성함
+         * 
+         */
+        TileLoader.prototype.getOSMTileImageUrl = function(zoomLevel, xIdx, yIdx){
+            if( !zoomLevel || !xIdx || !yIdx)
+                throw new Error();
+            return `https://a.tile.openstreetmap.org/${zoomLevel}/${xIdx}/${yIdx}.png`;
+        }
 
+        function MapView(){
+
+        }
+        MapView.prototype.setTileImage() = function (zoomLevel, widthOfView, heightOfView){
+
+        }
+
+        
+        MapView.prototype.getViewExtentXY() = function (){
+            
+        }
+
+        MapView.prototype.setZoomLevel() = function (newZoomLevel){
+            this._ZoomLevel = newZoomLevel;
+            this.viewRefresh();
+        }
+
+
+        /**
+         * 
+         */
+        function Projection(){
+            
+        }
+
+
+        Projection.prototype.transformXYToLatLonWithWebMercator =  
+            function transformXYToLatLonWithWebMercator(zoomLevel, x, y){
+            const λ = x / 256 * (2*Math.PI) / Math.pow(2,zoomLevel) - Math.PI;
+            const φ = 2 *  Math.atan( Math.pow ( Math.E,  Math.PI - y / 256 * (2 * Math.PI) / Math.pow(2,zoomLevel) ) ) - Math.PI/2;
+            const lat = φ * 180 / Math.PI;
+            const lon = λ * 180 / Math.PI; 
+            return {lat,lon} 
+        };
+                
+        /**
+         * Web Mercator의 투영방식으로 위경도 좌표를 x,y좌표로 변환함
+         */
+        Projection.prototype.transformLatLonToXYWithWebMercator =  
+            function transformLatLonToXYWithWebMercator(zoomLevel, Lat, Lon ){
+            var λ = Lon /180 * Math.PI;
+            var φ = Lat /180 * Math.PI;
+            var x = Math.floor(256 / ( 2 * Math.PI ) * Math.pow(2,zoomLevel) * ( λ + Math.PI));
+            var y = Math.floor(256 / ( 2 * Math.PI ) * Math.pow(2,zoomLevel) * ( Math.PI - Math.log(Math.tan(Math.PI/4 + φ/2))));
+            return {x,y};
+        };
 
 
 
