@@ -1,0 +1,29 @@
+{
+  "name": "close-layers",
+  "version": "1.0.0",
+  "description": "An imitation project of openlayers for educational purposes",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Uginim/mylayers.git"
+  },
+  "keywords": [
+    "map",
+    "simple-feature"
+  ],
+  "author": "Hyeonuk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Uginim/mylayers/issues"
+  },
+  "homepage": "https://github.com/Uginim/mylayers#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.14.3",
+    "@babel/core": "^7.14.3",
+    "@babel/preset-env": "^7.14.4",
+    "jest": "^26.6.3"
+  }
+}
