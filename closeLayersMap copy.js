@@ -4,23 +4,30 @@
     // en : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
  */
 const cl = (function initCloseLayers() {
+  'use strict';
   const cl = {};
-  /**
+ 
+  function Projectable(){
+
+
+  }
+  Projectable.prototype.convertCoordinatesToXY = function (zoomLevel, Lat, Lon){
+      
+  }
+
+  cl.WebMercator = Object.create(Projectable);
+
+   /**
+   * @
    * @description Web Mercator의 투영방식으로 위경도 좌표를 x,y좌표로 변환함
    * @param {Number} zoomLevel zoom
    */
-  function transformLatLonToXYWithWebMercator(zoomLevel, Lat, Lon) {
+  WebMercator.prototype.convertCoordinatesToXY = function (zoomLevel, Lat, Lon) {
     const λ = Lon / 180 * Math.PI;
     const φ = Lat / 180 * Math.PI;
     const x = Math.floor(256 / (2 * Math.PI) * Math.pow(2, zoomLevel) * (λ + Math.PI));
     const y = Math.floor(256 / (2 * Math.PI) * Math.pow(2, zoomLevel) * (Math.PI - Math.log(Math.tan(Math.PI / 4 + φ / 2))));
     return { x, y };
-  };
-  const getViewExtentGlobalXY = function (zoomLevel, centerLat, centerLon, width, height) {
-    const { x: centerX, y: centerY } = transformLatLonToXYWithWebMercator(zoomLevel, centerLat, centerLon);
-    const startY = Math.floor(centerY - height / 2);
-    const startX = Math.floor(centerX - width / 2);
-    return [startX, startY, startX + width, startY + height];
   };
 
 
@@ -29,8 +36,15 @@ const cl = (function initCloseLayers() {
     if (!(this instanceof Map)) {
       return new Map(config);
     }
+    if(!config.element ){
+      return;
+    }
+    const element = (config.element instanceof HTMLElement) ? element : document.getElementById(config.element); 
+    const canvas = document.createElement('canvas');
     window.addEventListener('load', () => {
-      const canvas = document.getElementById('mymap');
+      // const canvas = document.getElementById('mymap');
+      
+      
       // console.log("canvas:",canvas);
       // console.dir(canvas);
       const context = canvas.getContext('2d');
@@ -69,6 +83,16 @@ const cl = (function initCloseLayers() {
       });
     });
   }
+  Map.prototype.getView = function(){
+
+  }
+
+  Map.prototype.getLayerTree = function(){
+
+  }
+  // Map.prototype.
+
+
   function putImageTile(canvasContext, x, y, width, height, url) {
     const tileImage = new Image();
     tileImage.src = url;
@@ -79,9 +103,13 @@ const cl = (function initCloseLayers() {
     };
   }
 
+  function Renderable(){
 
+  }
 
-
+  function Layerable(){
+    
+  }
 
   function TileLoader() {
   }
@@ -97,9 +125,21 @@ const cl = (function initCloseLayers() {
   }
 
 
-
+  
   function MapView() {
+    // 센터를 불러옴
+    // 센터를 set함
+    // View의 크기를 보여줌
+    // 
   }
+  
+  MapView.prototype.getViewExtentGlobalXY = function (zoomLevel, centerLat, centerLon, width, height) {
+    const { x: centerX, y: centerY } = transformLatLonToXYWithWebMercator(zoomLevel, centerLat, centerLon);
+    const startY = Math.floor(centerY - height / 2);
+    const startX = Math.floor(centerX - width / 2);
+    return [startX, startY, startX + width, startY + height];
+  };
+
   // MapView.prototype.setTileImagesOnMap() = 
   function setTileImagesOnMap(zoomLevel, viewExtent, mapCanvasContext) {
     const startTileIdxOfX = Math.floor(viewExtent[0] / 256);
@@ -184,4 +224,4 @@ const cl = (function initCloseLayers() {
   return cl;
 }());
 
-export default test;
+export default cl;

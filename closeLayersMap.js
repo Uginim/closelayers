@@ -1,3 +1,4 @@
+var closeLayers ={};
 (function (){
     'use strict';
  
@@ -20,14 +21,18 @@
         if(!(this instanceof Map)){
             return new Map(config);
         }
+        let globalExtent;
         window.addEventListener('load',function(){
             var canvas = document.getElementById('mymap');
             // console.log("canvas:",canvas);
             // console.dir(canvas);
             var context = canvas.getContext('2d');
             var zoomLevel = 16  ;
-            
-            const extent = getViewExtentGlobalXY(zoomLevel,37.552940941510194, 127.0140353468922,800,600);
+            console.log("canvas width height",canvas.width,canvas.height);
+            // const extent = getViewExtentGlobalXY(zoomLevel,37.552940941510194, 127.0140353468922,800,600);
+            const extent = getViewExtentGlobalXY(zoomLevel,37.552940941510194, 127.0140353468922,canvas.width,canvas.height);
+            globalExtent = extent ;
+            console.log('globalextent:',extent);
             setTileImagesOnMap(zoomLevel,extent,context);
     
     
@@ -38,27 +43,59 @@
             // });
             var dragHandler = (function buildMouseHandler(){
                 var baseCenter;
+                let startPoint;
+                let curPoint;
                 return function dragHandler(event){ 
                     
-                    console.log(event,event.button,event.buttons);
-        
+                    // console.log(event.type,event,event.button,event.buttons);
+                    
                     if(event.type && event.buttons === 1){
                         if(event.type === 'mousedown' ){    
+                            // bondary들어오면
+                            startPoint = [event.clientX,event.clientY];
                             // baseCenter = curLocation;
                             
                         }else if(event.type === 'mousemove' ){
                             // relative location from center
                             // Move Center
                             // Render again 
-                        }else if(event.type === 'mouseup' ){
-                            // baseCenter = undefined;
+                            if(startPoint){
+                                curPoint = [event.clientX,event.clientY];
+                                const curDiff = [curPoint[0]-startPoint[0],curPoint[1]-startPoint[1]];
+                                startPoint = curPoint;
+                                console.log(curDiff);
+                                // context.translate(curDiff[0]*10, curDiff[1]*10);
+                                // context.fillRect(0, 0, 25, 25);
+                                let imageData = context.getImageData(0, 0, canvas.width,canvas.height);
+                                context.clearRect(0, 0, canvas.width,canvas.height);
+                                context.putImageData(imageData, curDiff[0], curDiff[1]);
+                                globalExtent[0]+=curDiff[0]*(-1);
+                                globalExtent[1]+=curDiff[1]*(-1);
+                                globalExtent[2] =globalExtent[0]+canvas.width;
+                                globalExtent[3] =globalExtent[1]+canvas.height;
+                                console.log(globalExtent);
+                                // context.restore();
+                                setTileImagesOnMap(zoomLevel,globalExtent,context);
+                            }
                         }
-                        console.log("clicked", event.buttons,event.button);
-        
+                        
+                        
+                        // else if(event.type === 'mouseup' ){
+                            // baseCenter = undefined;
+                        // }
+                        else {
+                            startPoint = undefined;
+                        }
+                        // console.log(context);
+                        // context.translate(103, 3);
+                        // console.log("clicked", event.buttons,event.button);
+                        // canvasContext.drawImage(tileImage,x,y,width,height);
+                        // const extent = getViewExtentGlobalXY(zoomLevel,37.552940941510194, 127.0140353468922,canvas.width,canvas.height);
+                        // console.log()
                     }
                 };
             })();
-            ['mousedown','mousemove','mouseup'].forEach(item => {
+            ['mousedown','mousemove','mouseup','mouseout'].forEach(item => {
                 canvas.addEventListener(item,dragHandler);
             });        
         });
@@ -66,6 +103,7 @@
     function putImageTile(canvasContext,x,y,width,height,url){
         var tileImage = new Image();
         tileImage.src = url;
+        tileImage.crossOrigin = "Anonymous";// 없으면 cors
         console.log("tileImage:",tileImage);
         tileImage.onload = function(){
             console.log("image onload:",url);
@@ -89,6 +127,8 @@
         if( !zoomLevel || !xIdx || !yIdx)
             throw new Error();
         return `https://a.tile.openstreetmap.org/${zoomLevel}/${xIdx}/${yIdx}.png`;
+        // return `https://tile.openstreetmap.org/${zoomLevel}/${xIdx}/${yIdx}.png/`;
+        //return `http://tiles.wmflabs.org/hillshading/${zoomLevel}/${xIdx}/${yIdx}.png`;
     }
 
 
@@ -201,4 +241,5 @@
 
     }
     
+    closeLayers.Map = Map;
 })();

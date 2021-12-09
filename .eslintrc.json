@@ -21,8 +21,8 @@
                 ["==", "!=", "===", "!==", ">", ">=", "<", "<="],
                 ["&&", "||"],
                 ["in", "instanceof"]
-            ],
-            "allowSamePrecedence": true
+            ]
+            // "allowSamePrecedence": true
         }
     ]
 
